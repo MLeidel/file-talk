@@ -1,4 +1,10 @@
 
+   __ _ _            _        _ _    
+  / _(_) | ___      | |_ __ _| | | __
+ | |_| | |/ _ \_____| __/ _` | | |/ /
+ |  _| | |  __/_____| || (_| | |   < 
+ |_| |_|_|\___|      \__\__,_|_|_|\_\
+                                     
 Python 3.x
 FileTalk
 filetalk.py - terminal version
@@ -33,7 +39,7 @@ filetalkgui.py - GUI version
 ----------------------------
 Python modules may need to pip install:
 
-    import PyPDF2
+    import PyPDF3
     import docx
     ttkbootstrap
     tkinter
