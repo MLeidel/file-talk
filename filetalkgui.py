@@ -1,17 +1,20 @@
 '''
 code file: filetalkgui.py
-espeak-ng is required on your system.
-  see: https://github.com/espeak-ng/espeak-ng/blob/master/docs/guide.md
-ffmpeg is required on your system.
-  see: https://ffmpeg.org/download.html
+
+Requires:
+    espeak-ng
+      see: https://github.com/espeak-ng/espeak-ng/blob/master/docs/guide.md
+    ffmpeg
+      see: https://ffmpeg.org/download.html
+    pdftotext (popplar-utils)
+      see: https://poppler.freedesktop.org/
+
 Inputs a text, word, or pdf file and talks, or outputs a wav file
 special modules needed:
 >pip install --pre python-docx  # for MS Word docs
->pip install PyPDF2  # for .pdf documents
 '''
 import os, sys
 import subprocess
-import PyPDF2
 import docx
 import signal
 from tkinter.font import Font
@@ -131,10 +134,13 @@ class Application(Frame):
         ''' converts input into one text string '''
         self.clean_text = ""
         if infile.lower().endswith(".pdf"):
-            pdfreader = PyPDF2.PdfFileReader(open(infile, 'rb'))
-            for page_num in range(pdfreader.numPages):
-                text = pdfreader.getPage(page_num).extractText()
-                self.clean_text += text
+            try:
+                text = subprocess.check_output(['pdftotext',
+                                               infile,
+                                               '-'])
+                self.clean_text = text.decode()
+            except Exception as e:
+                raise e
         elif infile.lower().endswith(".docx"):
             doc = docx.Document(infile)
             for paragraph in doc.paragraphs:

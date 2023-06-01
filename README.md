@@ -8,12 +8,13 @@ This software requires two other system programs:
   see: https://github.com/espeak-ng/espeak-ng/blob/master/docs/guide.md
 - __ffmpeg__  
   see: https://ffmpeg.org/download.html
+- __pdftotext__ (popplar-utils)  
+  see: https://poppler.freedesktop.org/
   
 Also:
 
 ```c
 >pip install --pre python-docx  # for MS Word docs
->pip install PyPDF3  # for .pdf documents
 >pip install argparse  # for command line help
 >pip install ttkbootstrap  # for GUI
 ```
@@ -23,8 +24,9 @@ are written in Python 3.10.6
 ```bash
 usage: filetalk.py [-h] [-v VOICE] [-s SPEED] [-p PITCH] [-mp3] [-txt] infile outfile
 
-Converts textual content from a PDF, Word, or Text file into speech or audo file. REQUIRES:
-"espeak-ng" and "ffmpeg"
+Converts textual content from a PDF, Word, or Text file into speech or audo files.  
+REQUIRES:
+"espeak-ng", "ffmpeg", and "pdftotext"
 
 positional arguments:
   infile      input file: .txt, .pdf, or .docx only

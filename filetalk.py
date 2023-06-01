@@ -1,22 +1,33 @@
 # filetalk (Python3)
-# espeak-ng is required on your system.
+#
+# filetalk is actually an integration of three
+# common, utilities which must be installed on your system:
+#
+# espeak-ng
 #   see: https://github.com/espeak-ng/espeak-ng/blob/master/docs/guide.md
-# ffmpeg is required on your system.
+# ffmpeg
 #   see: https://ffmpeg.org/download.html
+# pdftotext (popplar-utils)
+#   see: https://poppler.freedesktop.org/
+#
+# (demonstrating the beauty of Linux system design principles,
+# and the great flexibility of Python)
+#
 # Inputs a text, word, or pdf file and talks, or outputs a wav file
 # special modules needed:
+#
 # >pip install --pre python-docx  # for MS Word docs
-# >pip install PyPDF3  # for .pdf documents
 # >pip install argparse  # for command line help
+#
 # args:
 #   input path/file (required)
 #   output path/file | 'talk' (required)
 #   -v voice -s speed (defaults: -v "en-us" -s 150 )
-#   -mp3 (default wav file output)
+#   -mp3 (in addition to wav file output)
+#   -txt (in addition to wav file output)
 
 import sys
 import subprocess
-import PyPDF3
 import docx
 import argparse
 
@@ -49,10 +60,13 @@ clean_text = ""  # holds text to be sent to espeak
 # read input file .txt .pdf or .docx
 
 if args.infile.lower().endswith(".pdf"):
-    pdfreader = PyPDF3.PdfFileReader(open(args.infile, 'rb'))
-    for page_num in range(pdfreader.numPages):
-        text = pdfreader.getPage(page_num).extractText()
-        clean_text += text
+    try:
+        text = subprocess.check_output(['pdftotext',
+                                       args.infile,
+                                       '-'])
+        clean_text = text.decode()
+    except Exception as e:
+        raise e
 elif args.infile.lower().endswith(".docx"):
     doc = docx.Document(args.infile)
     for paragraph in doc.paragraphs:
