@@ -34,7 +34,7 @@ import argparse
 desc = '''
 Converts textual content from a PDF, Word, or Text file
 into speech or audo file.
-REQUIRES: "espeak-ng" and "ffmpeg"
+REQUIRES: "espeak-ng", "ffmpeg", and "pdftotext"
 '''
 # create command-line variables from arguments
 parser = argparse.ArgumentParser(description=desc)
