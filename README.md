@@ -3,13 +3,15 @@ Convert documents .pdf, .docx, .txt to audio files
 
 ![file-talk input/output](images/file-talk-in-out.png "file-talk input/output")
 
-This software requires two other system programs:
+This software requires three other system programs:
 - __espeak-ng__  
   see: https://github.com/espeak-ng/espeak-ng/blob/master/docs/guide.md
 - __ffmpeg__  
   see: https://ffmpeg.org/download.html
-- __pdftotext__ (popplar-utils)  
-  see: https://poppler.freedesktop.org/
+- __pdftotext__ (poppler-utils)  
+  see: https://poppler.freedesktop.org/  
+       https://blog.alivate.com.au/poppler-windows/  
+       Ubuntu: sudo apt install poppler-utils
   
 Also:
 

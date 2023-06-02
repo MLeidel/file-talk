@@ -1,13 +1,13 @@
 # filetalk (Python3)
 #
 # filetalk is actually an integration of three
-# common, utilities which must be installed on your system:
+# system utilities which must be installed:
 #
 # espeak-ng
 #   see: https://github.com/espeak-ng/espeak-ng/blob/master/docs/guide.md
 # ffmpeg
 #   see: https://ffmpeg.org/download.html
-# pdftotext (popplar-utils)
+# pdftotext (poppler-utils)
 #   see: https://poppler.freedesktop.org/
 #
 # (demonstrating the beauty of Linux system design principles,
@@ -33,13 +33,13 @@ import argparse
 
 desc = '''
 Converts textual content from a PDF, Word, or Text file
-into speech or audo file.
-REQUIRES: "espeak-ng", "ffmpeg", and "pdftotext"
+into speech, audo file, or textfile.
+REQUIRES: "espeak-ng", "ffmpeg", and "pdftotext".
 '''
 # create command-line variables from arguments
 parser = argparse.ArgumentParser(description=desc)
 parser.add_argument('infile', help='input file: .txt, .pdf, or .docx only')
-parser.add_argument('outfile', help='output file (no .ext) or "talk"')
+parser.add_argument('outfile', help='output file (no .ext) | "talk" | file.txt')
 parser.add_argument('-v', dest='voice', action='store',
                     default='en-us', help='espeak-ng voice code. Dft en-us')
 parser.add_argument('-s', dest='speed', action='store',
@@ -55,7 +55,7 @@ args = parser.parse_args()
 
 #---------------------------------------------------------------
 
-clean_text = ""  # holds text to be sent to espeak
+clean_text = ""  # holds extracted text to be processed ...
 
 # read input file .txt .pdf or .docx
 
@@ -74,10 +74,19 @@ elif args.infile.lower().endswith(".docx"):
 elif args.infile.lower().endswith(".txt"):
     clean_text = open(args.infile).read()
 else:
-    print("Input file must be txt, pdf, or docx file!")
+    print(f"Assuming Input File {args.infile} Is Text ...\n")
+    clean_text = open(args.infile).read()
+
+# at this point we have the plain text in a string "clean_text"
+
+# Just "text" output to file (no sound files, no other options recognized)
+if args.outfile.lower().endswith(".txt"):
+    with open(args.outfile, "w") as fout:
+        fout.write(clean_text)
+    print("Created TXT file:", args.outfile)
     sys.exit()
 
-# Just "speak" the file contents
+# Just "speak" the file contents (no file output)
 if args.outfile.lower() == "talk":
     subprocess.call(["espeak-ng", "-v"+args.voice, "-p"+args.pitch,
                 "-s"+args.speed, clean_text])
@@ -92,6 +101,7 @@ if args.MP3 is True:
     subprocess.call(["ffmpeg", "-i", args.outfile+".wav", args.outfile+".mp3"])
     print("Created MP3 file:", args.outfile+".mp3")
 
+# create text file also?
 if args.TXT is True:
     with open(args.outfile+".txt", "w") as fout:
         fout.write(clean_text)

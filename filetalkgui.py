@@ -6,12 +6,10 @@ Requires:
       see: https://github.com/espeak-ng/espeak-ng/blob/master/docs/guide.md
     ffmpeg
       see: https://ffmpeg.org/download.html
-    pdftotext (popplar-utils)
+    pdftotext (poppler-utils)
       see: https://poppler.freedesktop.org/
 
-Inputs a text, word, or pdf file and talks, or outputs a wav file
-special modules needed:
->pip install --pre python-docx  # for MS Word docs
+Inputs a text, word, or pdf file outputs speech, wav file, or text file.
 '''
 import os, sys
 import subprocess
@@ -131,7 +129,7 @@ class Application(Frame):
     #-----------------------------------------------
 
     def readFileIntoText(self, infile):
-        ''' converts input into one text string '''
+        ''' converts input into one text string: clean_text '''
         self.clean_text = ""
         if infile.lower().endswith(".pdf"):
             try:
@@ -145,11 +143,13 @@ class Application(Frame):
             doc = docx.Document(infile)
             for paragraph in doc.paragraphs:
                 self.clean_text += paragraph.text
-        elif infile.lower().endswith(".txt"):
-            self.clean_text = open(infile).read()
-        else:
-            messagebox.showerror('Error',
-                                 "Input file must be txt, pdf, or docx file!")
+        else: # assuming here it is a plain text file
+            if infile.lower().endswith(".txt"):
+                self.clean_text = open(infile).read()
+            else:
+                if messagebox.askokcancel('Warning', 'Assume Input Is Plain Text'):
+                    self.clean_text = open(infile).read()
+
         # an optional output text file
         if self.vcbx_txt.get() == 1:  # user checked "text" toggle
             outFile = self.vent_file_out.get()
@@ -165,10 +165,10 @@ class Application(Frame):
         ''' prompt user for document to speak '''
         filename = filedialog.askopenfilename(initialdir='/home',
                     title = 'Open file',
-                    filetypes = (('text files', '*.txt'),
+                    filetypes = (('all files', '*.*'),
                                  ('pdf files', '*.pdf'),
                                  ('docx files', '*.docx'),
-                                 ('all files', '*.*'))
+                                 ('text files', '*.txt'))
                     )
         if len(filename) > 1:  # user did enter something
             if filename.lower().endswith(".pdf") or \
@@ -176,8 +176,8 @@ class Application(Frame):
                 filename.lower().endswith(".txt"):
                     self.vent_file_in.set(filename)
             else:
-                messagebox.showerror('Error',
-                    "Input file must be .txt, .pdf, or .docx file!")
+                if messagebox.askokcancel('Warning', 'Assume Input Is Plain Text'):
+                    self.vent_file_in.set(filename)
 
 
     def btn_file_out_click(self):
@@ -198,7 +198,16 @@ class Application(Frame):
         speed = self.vspn_speed.get()
         pitch = self.vspn_pitch.get()
         self.readFileIntoText(inFile)  # set clean_text
-        # create speech audio file
+
+        # text file output only then return
+        # other options ignored
+        if outFile.lower().endswith(".txt"):
+            with open(outFile, "w") as fout:
+                fout.write(self.clean_text)
+            messagebox.showinfo('Created Text File', outFile)
+            return
+
+        # create speech audio file from clean_text
         try:
             subprocess.call(["espeak-ng", "-v"+voice, "-p"+pitch,
                             "-s"+speed, "-w"+outFile+".wav", self.clean_text])
@@ -208,7 +217,7 @@ class Application(Frame):
                 "subprocess for espeak returned an error")
             raise e
 
-        # an optional mp3 output file
+        # process an optional mp3 output file
         if self.vcbx_mp3.get() == 1:  # user checked mp3 toggle
             try:
                 subprocess.call(["ffmpeg", "-i",
@@ -245,7 +254,7 @@ class Application(Frame):
 
 
     def btn_close_click(self):
-        ''' docstring '''
+        ''' Close the app and cancel voice if engaged '''
         try:
             self.proc.send_signal(signal.SIGINT)
         except Exception as e:
