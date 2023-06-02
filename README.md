@@ -42,8 +42,41 @@ options:
   -mp3        make additional mp3 output file
   -txt        make additional text output file
 ```
+---
 
-These command-line options are incorporated into the GUI version.
+  __All of the command-line options are incorporated into the GUI version.__
+
+---
+
+Command-line _filetalk.py_ __Examples__:
+
+```bash
+
+> python3 filetalk.py sample.pdf sample  # creates sample.wav file
+> python3 filetalk.py sample.docx sample  # creates sample.wav file
+> python3 filetalk.py sample.txt sample  # creates sample.wav file
+
+> python3 filetalk.py -txt sample.pdf sample  # creates sample.wav and sample.txt
+> python3 filetalk.py -mp3 sample.docx sample  # creates sample.wav and sample.mp3
+> python3 filetalk.py -p80 sample.pdf sample  # creates sample.wav with higher voice pitch
+
+> python3 filetalk.py sample.pdf talk  # speaks the text in sample.pdf
+> python3 filetalk.py sample.docx sample.txt  # creates sample.txt (no audio files)
+> python3 filetalk.py sample.pdf sandwich  # creates sandwich.wav file
+
+> python3 filetalk.py -ven+f3 -s250 sample.pdf talk  # female speaks the pdf very fast
+> python3 filetalk.py -mp3 -ven+f3 -s250 sample.pdf sample  # wav and mp3 created
+
+```
+
+
+
+
+
+
+
+
+
 
 end README
 
